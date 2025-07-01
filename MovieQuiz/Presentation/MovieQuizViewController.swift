@@ -83,7 +83,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.questionFactory?.requestNextQuestion()
         }
         
-    //    alertPresenter.show(in: self, model: model)
+       alertPresenter?.presentAlert(with: model)
     }
         
         private func setUpImageView() {
