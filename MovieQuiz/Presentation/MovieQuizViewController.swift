@@ -6,7 +6,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     
     
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     @IBOutlet private weak var moviePosterImage: UIImageView!
     
@@ -14,6 +13,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     @IBOutlet private weak var textLabel: UILabel!
     private var statisticService: StatisticServiceProtocol!
+    var loadingIndicator = UIActivityIndicatorView(style: .medium)
+    
+
     
     private var currentQuestionIndex = 0
     
@@ -28,6 +30,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         super.viewDidLoad()
         self.alertPresenter = AlertPresenter(viewController: self)
         self.statisticService = StatisticService()
+        
+        loadingIndicator.center = moviePosterImage.center
+        
+        moviePosterImage.addSubview(loadingIndicator)
         
          questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         statisticService = StatisticService()
@@ -50,7 +56,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             }
         }
     func didLoadDataFromServer() {
-        activityIndicator.isHidden = true 
+        loadingIndicator.isHidden = true
          questionFactory?.requestNextQuestion()
     }
 
@@ -59,14 +65,18 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
         
     private func showLoadingIndicator() {
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
+        DispatchQueue.main.async {
+            self.loadingIndicator.isHidden = false
+            self.loadingIndicator.startAnimating()
+        }
     }
     private func hideLoadingIndicator() {
-        if activityIndicator.isAnimating {
-            activityIndicator.stopAnimating()
+        DispatchQueue.main.async {
+            if self.loadingIndicator.isAnimating {
+                self.loadingIndicator.stopAnimating()
+            }
+            self.loadingIndicator.isHidden = true
         }
-        activityIndicator.isHidden = true
     }
 
     private func showNetworkError(message: String) {
